@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧋 茶飲點餐系統</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .login-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: none;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .status-connected {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status-disconnected {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .status-loading {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .options-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .option-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .option-section label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .toppings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .topping-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+        
+        .topping-item input[type="checkbox"] {
+            margin: 0;
+        }
+        
+        .control-group label {
+            font-weight: bold;
+            min-width: 80px;
+        }
+        
+        select, input, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        select {
+            min-width: 200px;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .admin-controls {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .admin-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d5a2d;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e9ecef;
+        }
+        
+        .total-row {
+            background: #e3f2fd !important;
+            font-weight: bold;
+        }
+        
+        .summary {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .summary h3 {
+            margin: 0 0 10px 0;
+            color: #2d5a2d;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .remove-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .remove-btn:hover {
+            background: #c82333;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 20px auto;
+                padding: 30px 20px;
+            }
+            
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group label {
+                min-width: auto;
+            }
+            
+            select, input {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 登入頁面 -->
+    <div id="loginPage" class="login-container">
+        <div class="login-title">🧋 茶飲點餐系統</div>
+        <div class="login-subtitle">請輸入密碼以繼續</div>
+        <input type="password" id="passwordInput" class="password-input" placeholder="請輸入密碼" />
+        <button id="loginBtn" class="login-btn">登入</button>
+        <div id="loginError" class="error-message" style="display: none;"></div>
+    </div>
+
+    <!-- 主要系統頁面 -->
+    <div id="mainPage" class="container">
+        <div class="header">
+            <h1>🧋 茶飲點餐系統</h1>
+            <p>即時同步，多人協作點餐</p>
+            <button id="logoutBtn" class="logout-btn">登出</button>
+            <div id="statusIndicator" class="status-indicator status-loading">連接中...</div>
+        </div>
+        
+        <!-- 管理者控制面板 -->
+        <div class="admin-controls">
+            <div class="admin-title">📊 管理者控制面板</div>
+            <div class="control-group">
+                <button id="exportBtn" class="btn-success">匯出所有訂單 CSV</button>
+                <button id="clearBtn" class="btn-danger">清空所有訂單</button>
+                <span style="margin-left: 20px; font-weight: bold;">即時更新：<span id="lastUpdate">-</span></span>
+            </div>
+        </div>
+        
+        <!-- 點餐表單 -->
+        <div class="controls">
+            <div class="control-group">
+                <label>選擇分類：</label>
+                <select id="categorySelect">
+                    <option value="">請選擇分類</option>
+                    <option value="原萃小茶館">原萃小茶館</option>
+                    <option value="造市小秘境">造市小秘境</option>
+                    <option value="鮮榨小清翠">鮮榨小清翠</option>
+                    <option value="醇韻奶茶">醇韻奶茶</option>
+                    <option value="邀茶市">邀茶市</option>
+                    <option value="美妙限定">美妙限定</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>選擇品項：</label>
+                <select id="itemSelect" disabled>
+                    <option value="">請先選擇分類</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>顧客姓名：</label>
+                <input type="text" id="customerName" placeholder="請輸入顧客姓名" disabled style="min-width: 150px;">
+            </div>
+            
+            <div class="options-group" id="optionsGroup" style="display: none;">
+                <div class="option-section">
+                    <label>甜度：</label>
+                    <select id="sweetnessSelect">
+                        <option value="正常甜">正常甜</option>
+                        <option value="少糖">少糖</option>
+                        <option value="半糖">半糖</option>
+                        <option value="微糖">微糖</option>
+                        <option value="1分糖">1分糖</option>
+                        <option value="無糖">無糖</option>
+                    </select>
+                </div>
+                
+                <div class="option-section">
+                    <label>冰塊：</label>
+                    <select id="iceSelect">
+                        <option value="正常冰">正常冰</option>
+                        <option value="少冰">少冰</option>
+                        <option value="微冰">微冰</option>
+                        <option value="去冰">去冰</option>
+                        <option value="溫飲">溫飲</option>
+                        <option value="熱飲">熱飲</option>
+                    </select>
+                </div>
+                
+                <div class="option-section">
+                    <label>加料：</label>
+                    <div class="toppings-grid">
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping1" value="珍珠" data-price="10">
+                            <label for="topping1">珍珠 (+$10)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping2" value="椰果" data-price="10">
+                            <label for="topping2">椰果 (+$10)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping3" value="布丁" data-price="15">
+                            <label for="topping3">布丁 (+$15)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping4" value="仙草" data-price="10">
+                            <label for="topping4">仙草 (+$10)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping5" value="愛玉" data-price="15">
+                            <label for="topping5">愛玉 (+$15)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping6" value="蘆薈" data-price="10">
+                            <label for="topping6">蘆薈 (+$10)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping7" value="奶蓋" data-price="20">
+                            <label for="topping7">奶蓋 (+$20)</label>
+                        </div>
+                        <div class="topping-item">
+                            <input type="checkbox" id="topping8" value="鮮奶" data-price="15">
+                            <label for="topping8">鮮奶 (+$15)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>數量：</label>
+                <input type="number" id="quantity" min="1" value="1" disabled>
+                <button id="addBtn" disabled>新增到訂單</button>
+            </div>
+        </div>
+        
+        <!-- 即時訂單表格 -->
+        <div class="table-container">
+            <table id="orderTable">
+                <thead>
+                    <tr>
+                        <th>時間</th>
+                        <th>顧客姓名</th>
+                        <th>分類</th>
+                        <th>品項</th>
+                        <th>甜度</th>
+                        <th>冰塊</th>
+                        <th>加料</th>
+                        <th>單價</th>
+                        <th>數量</th>
+                        <th>小計</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                    <tr>
+                        <td colspan="11" style="text-align: center; color: #666;">載入中...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 統計摘要 -->
+        <div class="summary">
+            <h3>📊 即時統計</h3>
+            <div class="summary-item">
+                <span>不同顧客數：</span>
+                <span id="uniqueCustomers">0</span>
+            </div>
+            <div class="summary-item">
+                <span>總品項數：</span>
+                <span id="totalItems">0</span>
+            </div>
+            <div class="summary-item">
+                <span>總數量：</span>
+                <span id="totalQuantity">0</span>
+            </div>
+            <div class="summary-item">
+                <span>總金額：</span>
+                <span id="totalAmount">NT$ 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // 密碼設定（您可以修改這個密碼）
+        const SYSTEM_PASSWORD = 'tea2025';
+        
+        // Firebase 設定（已內嵌）
+        const firebaseConfig = {
+            "apiKey": "AIzaSyC6BlzAWm2PFBRJrtzySyI0spJrk-DIuvA",
+            "authDomain": "order-collect-eb163.firebaseapp.com",
+            "projectId": "order-collect-eb163",
+            "storageBucket": "order-collect-eb163.firebasestorage.app",
+            "messagingSenderId": "276173896243",
+            "appId": "1:276173896243:web:e7cc9f400d4d509699c146",
+            "measurementId": "G-2NCH0KCLRZ"
+        };
+        
+        // 全域變數
+        let db = null;
+        let ordersRef = null;
+        let unsubscribe = null;
+        
+        const menuData = {
+            "原萃小茶館": {
+                "夜韻紅茶": 35,
+                "金萱蜜香紅茶": 35,
+                "黃金烏龍茶": 40,
+                "四季春青茶": 35,
+                "三源茉莉綠茶": 35
+            },
+            "造市小秘境": {
+                "金萱蜜香紅茶": 65,
+                "春芽蜜香青": 65,
+                "三源茉莉綠茶絲": 65,
+                "黃金烏龍蜜香奶茶": 65,
+                "法式可可鮮奶茶": 85,
+                "焙咖啡抹茶拿鐵": 85,
+                "鮮榨蘋果蜜香奶茶": 95
+            },
+            "鮮榨小清翠": {
+                "鮮百香綠茶": 60,
+                "百香波波茶": 70,
+                "鮮榨檸檬茶": 70,
+                "青檸氣泡茶": 55,
+                "鮮榨檸檬茶": 55,
+                "蜂蜜檸檬茶": 60,
+                "鮮榨蘋果紅茶": 65,
+                "檸檬夾青茶": 55,
+                "侯茶檸檬紅茶": 60,
+                "金萱蜜香紅茶": 60,
+                "造市水果茶": 70,
+                "鮮榨蘋果紅茶": 85
+            },
+            "醇韻奶茶": {
+                "奶茶": 50,
+                "黃金烏龍奶茶": 55,
+                "冰淇淋紅茶": 50,
+                "珍珠奶茶": 55,
+                "紅茶拿鐵": 60,
+                "燕麥奶茶": 65
+            },
+            "邀茶市": {
+                "造市茶凍": 45,
+                "造市鮮奶茶": 80,
+                "造市日式奶茶": 75,
+                "造市香檸茶": 60,
+                "造市蜂蜜茶": 75
+            },
+            "美妙限定": {
+                "燒烤貝殼奶茶": 95,
+                "芒果蜜香奶茶": 95,
+                "蜂蜜芒果奶茶": 95,
+                "香草蜜香奶茶": 90
+            }
+        };
+
+        // DOM 元素
+        const loginPage = document.getElementById('loginPage');
+        const mainPage = document.getElementById('mainPage');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const categorySelect = document.getElementById('categorySelect');
+        const itemSelect = document.getElementById('itemSelect');
+        const customerNameInput = document.getElementById('customerName');
+        const optionsGroup = document.getElementById('optionsGroup');
+        const sweetnessSelect = document.getElementById('sweetnessSelect');
+        const iceSelect = document.getElementById('iceSelect');
+        const quantityInput = document.getElementById('quantity');
+        const addBtn = document.getElementById('addBtn');
+        const orderTableBody = document.getElementById('orderTableBody');
+        const lastUpdateSpan = document.getElementById('lastUpdate');
+
+        // 登入功能
+        function checkPassword() {
+            const inputPassword = passwordInput.value.trim();
+            if (inputPassword === SYSTEM_PASSWORD) {
+                localStorage.setItem('teaOrderAuth', 'true');
+                showMainPage();
+            } else {
+                showError('密碼錯誤，請重新輸入');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+        }
+
+        function showMainPage() {
+            loginPage.style.display = 'none';
+            mainPage.style.display = 'block';
+            initializeFirebase();
+        }
+
+        function logout() {
+            localStorage.removeItem('teaOrderAuth');
+            if (unsubscribe) {
+                unsubscribe();
+            }
+            loginPage.style.display = 'block';
+            mainPage.style.display = 'none';
+            passwordInput.value = '';
+            loginError.style.display = 'none';
+        }
+
+        // 初始化 Firebase
+        async function initializeFirebase() {
+            try {
+                statusIndicator.textContent = '連接中...';
+                statusIndicator.className = 'status-indicator status-loading';
+                
+                // 動態載入 Firebase SDK
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+                const { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+                
+                // 將 Firebase 函數存為全域變數
+                window.firebaseFunctions = { addDoc, deleteDoc, doc, getDocs };
+                
+                // 初始化 Firebase
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                ordersRef = collection(db, 'orders');
+                
+                // 設定即時監聽
+                const q = query(ordersRef, orderBy('timestamp', 'desc'));
+                unsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const orders = [];
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (!data.test) {  // 排除測試資料
+                            orders.push({
+                                id: doc.id,
+                                ...data
+                            });
+                        }
+                    });
+                    updateOrderTable(orders);
+                    updateSummary(orders);
+                    lastUpdateSpan.textContent = new Date().toLocaleTimeString();
+                });
+                
+                statusIndicator.textContent = '已連接';
+                statusIndicator.className = 'status-indicator status-connected';
+                
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('Firebase 初始化失敗:', error);
+                statusIndicator.textContent = '連接失敗';
+                statusIndicator.className = 'status-indicator status-disconnected';
+            }
+        }
+
+        // 新增訂單
+        async function addOrder() {
+            if (!db || !window.firebaseFunctions) {
+                alert('請稍候，系統正在連接中...');
+                return;
+            }
+            
+            const category = categorySelect.value;
+            const item = itemSelect.value;
+            const customerName = customerNameInput.value.trim();
+            const quantity = parseInt(quantityInput.value);
+            const basePrice = parseInt(itemSelect.selectedOptions[0].dataset.price);
+            const sweetness = sweetnessSelect.value;
+            const ice = iceSelect.value;
+            
+            if (!customerName) {
+                alert('請填入顧客姓名！');
+                customerNameInput.focus();
+                return;
+            }
+            
+            // 計算加料價格
+            const toppings = [];
+            let toppingPrice = 0;
+            const toppingInputs = document.querySelectorAll('input[type="checkbox"]:checked');
+            toppingInputs.forEach(input => {
+                toppings.push(input.value);
+                toppingPrice += parseInt(input.dataset.price);
+            });
+            
+            const totalPrice = basePrice + toppingPrice;
+            const toppingsText = toppings.length > 0 ? toppings.join(', ') : '無';
+
+            if (category && item && quantity > 0) {
+                try {
+                    addBtn.disabled = true;
+                    addBtn.textContent = '新增中...';
+                    
+                    const orderData = {
+                        customerName: customerName,
+                        category: category,
+                        item: item,
+                        sweetness: sweetness,
+                        ice: ice,
+                        toppings: toppingsText,
+                        basePrice: basePrice,
+                        toppingPrice: toppingPrice,
+                        totalPrice: totalPrice,
+                        quantity: quantity,
+                        subtotal: totalPrice * quantity,
+                        timestamp: new Date()
+                    };
+                    
+                    await window.firebaseFunctions.addDoc(ordersRef, orderData);
+                    
+                    // 重置表單
+                    customerNameInput.value = '';
+                    quantityInput.value = 1;
+                    sweetnessSelect.value = '正常甜';
+                    iceSelect.value = '正常冰';
+                    toppingInputs.forEach(input => input.checked = false);
+                    
+                } catch (error) {
+                    console.error('新增訂單失敗:', error);
+                    alert('新增訂單失敗，請重試');
+                } finally {
+                    addBtn.disabled = false;
+                    addBtn.textContent = '新增到訂單';
+                }
+            }
+        }
+
+        // 刪除訂單
+        async function removeOrder(orderId) {
+            if (!db || !window.firebaseFunctions) return;
+            
+            if (confirm('確定要刪除這筆訂單嗎？')) {
+                try {
+                    await window.firebaseFunctions.deleteDoc(window.firebaseFunctions.doc(db, 'orders', orderId));
+                } catch (error) {
+                    console.error('刪除訂單失敗:', error);
+                    alert('刪除訂單失敗，請重試');
+                }
+            }
+        }
+
+        // 清空所有訂單
+        async function clearAllOrders() {
+            if (!db || !window.firebaseFunctions) return;
+            
+            if (confirm('確定要清空所有訂單嗎？此操作無法復原！')) {
+                try {
+                    const snapshot = await window.firebaseFunctions.getDocs(ordersRef);
+                    const deletePromises = [];
+                    
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (!data.test) {  // 不刪除測試資料
+                            deletePromises.push(window.firebaseFunctions.deleteDoc(doc.ref));
+                        }
+                    });
+                    
+                    await Promise.all(deletePromises);
+                    alert('所有訂單已清空');
+                } catch (error) {
+                    console.error('清空訂單失敗:', error);
+                    alert('清空訂單失敗，請重試');
+                }
+            }
+        }
+
+        // 更新訂單表格
+        function updateOrderTable(orders) {
+            if (orders.length === 0) {
+                orderTableBody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: #666;">目前沒有訂單</td></tr>';
+                return;
+            }
+
+            let html = '';
+            orders.forEach((order, index) => {
+                const priceDetail = order.toppingPrice > 0 ? 
+                    `NT$ ${order.basePrice} + ${order.toppingPrice}` : 
+                    `NT$ ${order.basePrice}`;
+                
+                const orderTime = order.timestamp ? 
+                    new Date(order.timestamp.seconds * 1000).toLocaleTimeString() : 
+                    '未知';
+                
+                html += `
+                    <tr>
+                        <td>${orderTime}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.category}</td>
+                        <td>${order.item}</td>
+                        <td>${order.sweetness}</td>
+                        <td>${order.ice}</td>
+                        <td>${order.toppings}</td>
+                        <td>${priceDetail}</td>
+                        <td>${order.quantity}</td>
+                        <td>NT$ ${order.subtotal}</td>
+                        <td>
+                            <button class="remove-btn" data-order-id="${order.id}">刪除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            const totalAmount = orders.reduce((sum, order) => sum + order.subtotal, 0);
+            const totalQuantity = orders.reduce((sum, order) => sum + order.quantity, 0);
+            
+            html += `
+                <tr class="total-row">
+                    <td colspan="8">總計</td>
+                    <td>${totalQuantity}</td>
+                    <td>NT$ ${totalAmount}</td>
+                    <td>-</td>
+                </tr>
+            `;
+
+            orderTableBody.innerHTML = html;
+            
+            // 為刪除按鈕添加事件監聽器
+            const removeButtons = orderTableBody.querySelectorAll('.remove-btn');
+            removeButtons.forEach(button => {
+                if (button.dataset.orderId) {
+                    button.addEventListener('click', () => removeOrder(button.dataset.orderId));
+                }
+            });
+        }
+
+        // 更新統計摘要
+        function updateSummary(orders) {
+            const totalItems = orders.length;
+            const totalQuantity = orders.reduce((sum, order) => sum + order.quantity, 0);
+            const totalAmount = orders.reduce((sum, order) => sum + order.subtotal, 0);
+            const uniqueCustomers = new Set(orders.map(order => order.customerName)).size;
+
+            document.getElementById('uniqueCustomers').textContent = uniqueCustomers;
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalQuantity').textContent = totalQuantity;
+            document.getElementById('totalAmount').textContent = `NT$ ${totalAmount}`;
+        }
+
+        // 匯出 CSV
+        function exportToCSV() {
+            const table = document.getElementById('orderTable');
+            const rows = table.querySelectorAll('tbody tr');
+            
+            if (rows.length <= 1) {
+                alert('沒有訂單資料可以匯出');
+                return;
+            }
+
+            let csv = '時間,顧客姓名,分類,品項,甜度,冰塊,加料,基本價格,加料價格,總單價,數量,小計\n';
+            
+            for (let i = 0; i < rows.length - 1; i++) {
+                const row = rows[i];
+                const cells = row.querySelectorAll('td');
+                
+                if (cells.length >= 10) {
+                    const time = cells[0].textContent.trim();
+                    const customerName = cells[1].textContent.trim();
+                    const category = cells[2].textContent.trim();
+                    const item = cells[3].textContent.trim();
+                    const sweetness = cells[4].textContent.trim();
+                    const ice = cells[5].textContent.trim();
+                    const toppings = cells[6].textContent.trim();
+                    const priceText = cells[7].textContent.trim();
+                    const quantity = cells[8].textContent.trim();
+                    const subtotal = cells[9].textContent.replace('NT$ ', '').trim();
+                    
+                    let basePrice = '';
+                    let toppingPrice = '0';
+                    let totalPrice = '';
+                    
+                    if (priceText.includes(' + ')) {
+                        const prices = priceText.split(' + ');
+                        basePrice = prices[0].replace('NT$ ', '');
+                        toppingPrice = prices[1];
+                        totalPrice = (parseInt(basePrice) + parseInt(toppingPrice)).toString();
+                    } else {
+                        basePrice = priceText.replace('NT$ ', '');
+                        totalPrice = basePrice;
+                    }
+                    
+                    csv += `"${time}","${customerName}","${category}","${item}","${sweetness}","${ice}","${toppings}",${basePrice},${toppingPrice},${totalPrice},${quantity},${subtotal}\n`;
+                }
+            }
+
+            const totalRow = rows[rows.length - 1];
+            if (totalRow && totalRow.classList.contains('total-row')) {
+                const totalCells = totalRow.querySelectorAll('td');
+                if (totalCells.length >= 3) {
+                    const totalQuantity = totalCells[totalCells.length - 2].textContent.trim();
+                    const totalAmount = totalCells[totalCells.length - 1].textContent.replace('NT$ ', '').trim();
+                    csv += `總計,,,,,,,,,,${totalQuantity},${totalAmount}\n`;
+                }
+            }
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `茶飲訂單_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.click();
+        }
+
+        // 設定事件監聽器
+        function setupEventListeners() {
+            categorySelect.addEventListener('change', function() {
+                const category = this.value;
+                itemSelect.innerHTML = '<option value="">請選擇品項</option>';
+                
+                if (category && menuData[category]) {
+                    Object.keys(menuData[category]).forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = `${item} - NT$ ${menuData[category][item]}`;
+                        option.dataset.price = menuData[category][item];
+                        itemSelect.appendChild(option);
+                    });
+                    itemSelect.disabled = false;
+                    customerNameInput.disabled = false;
+                } else {
+                    itemSelect.disabled = true;
+                    customerNameInput.disabled = true;
+                    optionsGroup.style.display = 'none';
+                    quantityInput.disabled = true;
+                    addBtn.disabled = true;
+                }
+            });
+
+            itemSelect.addEventListener('change', function() {
+                if (this.value) {
+                    optionsGroup.style.display = 'block';
+                    quantityInput.disabled = false;
+                    addBtn.disabled = false;
+                } else {
+                    optionsGroup.style.display = 'none';
+                    quantityInput.disabled = true;
+                    addBtn.disabled = true;
+                }
+            });
+
+            addBtn.addEventListener('click', addOrder);
+            document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+            document.getElementById('clearBtn').addEventListener('click', clearAllOrders);
+        }
+
+        // 事件監聽器設定
+        loginBtn.addEventListener('click', checkPassword);
+        logoutBtn.addEventListener('click', logout);
+        
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // 頁面載入時檢查是否已登入
+        window.addEventListener('load', function() {
+            const isAuthenticated = localStorage.getItem('teaOrderAuth') === 'true';
+            if (isAuthenticated) {
+                showMainPage();
+            } else {
+                passwordInput.focus();
+            }
+        });
+
+        // 頁面關閉時清理監聽器
+        window.addEventListener('beforeunload', function() {
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        });
+
+        // 全域函數
+        window.removeOrder = removeOrder;
+    </script>
+</body>
+</html>
