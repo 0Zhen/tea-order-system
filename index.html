@@ -326,6 +326,16 @@
             background: #c82333;
         }
         
+        .notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #856404;
+        }
+        
         @media (max-width: 768px) {
             .login-container {
                 margin: 20px auto;
@@ -471,6 +481,11 @@
                             <label for="topping8">鮮奶 (+$15)</label>
                         </div>
                     </div>
+                </div>
+                
+                <div id="specialNotice" class="notice" style="display: none;">
+                    <strong>特別說明：</strong>
+                    <span id="noticeText"></span>
                 </div>
             </div>
             
@@ -629,6 +644,8 @@
         const addBtn = document.getElementById('addBtn');
         const orderTableBody = document.getElementById('orderTableBody');
         const lastUpdateSpan = document.getElementById('lastUpdate');
+        const specialNotice = document.getElementById('specialNotice');
+        const noticeText = document.getElementById('noticeText');
 
         // 登入功能
         function checkPassword() {
@@ -663,6 +680,91 @@
             mainPage.style.display = 'none';
             passwordInput.value = '';
             loginError.style.display = 'none';
+        }
+
+        // 檢查是否為塩雪系列
+        function isSaltSnowSeries(category) {
+            return category === '塩雪澄市';
+        }
+
+        // 檢查是否為蘋果歐蕾
+        function isAppleAuLait(item) {
+            return item === '鮮榨蘋果歐蕾';
+        }
+
+        // 更新冰塊選項
+        function updateIceOptions(category) {
+            const iceSelect = document.getElementById('iceSelect');
+            
+            // 清除所有選項
+            iceSelect.innerHTML = '';
+            
+            if (isSaltSnowSeries(category)) {
+                // 塩雪系列：最低冰量是微冰
+                const saltSnowIceOptions = [
+                    { value: '正常冰', text: '正常冰' },
+                    { value: '少冰', text: '少冰' },
+                    { value: '微冰', text: '微冰' }
+                ];
+                
+                saltSnowIceOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    iceSelect.appendChild(optionElement);
+                });
+                
+                iceSelect.value = '正常冰';
+            } else {
+                // 其他系列：正常選項
+                const normalIceOptions = [
+                    { value: '正常冰', text: '正常冰' },
+                    { value: '少冰', text: '少冰' },
+                    { value: '微冰', text: '微冰' },
+                    { value: '去冰', text: '去冰' },
+                    { value: '溫飲', text: '溫飲' },
+                    { value: '熱飲', text: '熱飲' }
+                ];
+                
+                normalIceOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    iceSelect.appendChild(optionElement);
+                });
+                
+                iceSelect.value = '正常冰';
+            }
+        }
+
+        // 更新選項狀態
+        function updateOptionsForItem(item, category) {
+            const sweetnessSelect = document.getElementById('sweetnessSelect');
+            const iceSelect = document.getElementById('iceSelect');
+            const specialNotice = document.getElementById('specialNotice');
+            const noticeText = document.getElementById('noticeText');
+            
+            if (isAppleAuLait(item)) {
+                // 蘋果歐蕾：固定甜度和冰塊
+                sweetnessSelect.disabled = true;
+                iceSelect.disabled = true;
+                sweetnessSelect.value = '正常甜';
+                iceSelect.value = '正常冰';
+                
+                specialNotice.style.display = 'block';
+                noticeText.textContent = '蘋果歐蕾的甜度和冰塊已固定，無法調整。';
+            } else {
+                // 其他品項：正常調整
+                sweetnessSelect.disabled = false;
+                iceSelect.disabled = false;
+                
+                if (isSaltSnowSeries(category)) {
+                    specialNotice.style.display = 'block';
+                    noticeText.textContent = '塩雪系列最低冰量為微冰，無法選擇去冰、溫飲或熱飲。';
+                } else {
+                    specialNotice.style.display = 'none';
+                }
+            }
         }
 
         // 初始化 Firebase
@@ -967,6 +1069,9 @@
                 itemSelect.innerHTML = '<option value="">請選擇品項</option>';
                 
                 if (category && menuData[category]) {
+                    // 更新冰塊選項
+                    updateIceOptions(category);
+                    
                     Object.keys(menuData[category]).forEach(item => {
                         const option = document.createElement('option');
                         option.value = item;
@@ -982,18 +1087,26 @@
                     optionsGroup.style.display = 'none';
                     quantityInput.disabled = true;
                     addBtn.disabled = true;
+                    specialNotice.style.display = 'none';
                 }
             });
 
             itemSelect.addEventListener('change', function() {
-                if (this.value) {
+                const item = this.value;
+                const category = categorySelect.value;
+                
+                if (item) {
                     optionsGroup.style.display = 'block';
                     quantityInput.disabled = false;
                     addBtn.disabled = false;
+                    
+                    // 更新選項狀態
+                    updateOptionsForItem(item, category);
                 } else {
                     optionsGroup.style.display = 'none';
                     quantityInput.disabled = true;
                     addBtn.disabled = true;
+                    specialNotice.style.display = 'none';
                 }
             });
 
