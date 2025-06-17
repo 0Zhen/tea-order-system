@@ -716,8 +716,8 @@
             return item === '三窨芒果綠茶' || item === '四季芒果青茶';
         }
 
-        // 更新冰塊選項
-        function updateIceOptions(category) {
+        // 更新冰塊選項（同時考慮分類和品項）
+        function updateIceOptions(category, item = null) {
             const iceSelect = document.getElementById('iceSelect');
             
             // 清除所有選項
@@ -738,7 +738,22 @@
                     iceSelect.appendChild(optionElement);
                 });
                 
-                iceSelect.value = '正常冰';
+            } else if (item && isMangoSeries(item)) {
+                // 芒果系列：不能溫飲或熱飲
+                const mangoIceOptions = [
+                    { value: '正常冰', text: '正常冰' },
+                    { value: '少冰', text: '少冰' },
+                    { value: '微冰', text: '微冰' },
+                    { value: '去冰', text: '去冰' }
+                ];
+                
+                mangoIceOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    iceSelect.appendChild(optionElement);
+                });
+                
             } else {
                 // 其他系列：正常選項
                 const normalIceOptions = [
@@ -756,9 +771,9 @@
                     optionElement.textContent = option.text;
                     iceSelect.appendChild(optionElement);
                 });
-                
-                iceSelect.value = '正常冰';
             }
+            
+            iceSelect.value = '正常冰';
         }
 
         // 更新甜度選項
@@ -845,6 +860,9 @@
             // 先更新甜度選項
             updateSweetnessOptions(item);
             
+            // 再更新冰塊選項（傳入品項參數）
+            updateIceOptions(category, item);
+            
             if (isAppleAuLait(item)) {
                 // 蘋果歐蕾：固定甜度和冰塊
                 sweetnessSelect.disabled = true;
@@ -876,6 +894,7 @@
                 
                 if (isMangoSeries(item)) {
                     noticeMessages.push('芒果系列最低甜度為1分糖，無法選擇無糖');
+                    noticeMessages.push('芒果系列無法選擇溫飲或熱飲');
                 }
                 
                 if (noticeMessages.length > 0) {
