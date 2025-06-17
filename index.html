@@ -593,7 +593,9 @@
                 "桃氣檸檬": 60,
                 "金鑽蜜鳳梨": 60,
                 "澄市水果茶": 70,
-                "鮮榨蘋果紅玉": 85
+                "鮮榨蘋果紅玉": 85,
+                "鮮榨蘋果綠茶": 85,
+                "鮮榨蘋果青茶": 85
             },
             "醇韻奶茶": {
                 "奶茶": 50,
@@ -619,6 +621,8 @@
                 "澄凍鮮奶綠": 75
             },
             "季節限定": {
+                "四季芒果青茶": 70,
+                "三窨芒果綠茶": 70,
                 "楊枝甘露": 95,
                 "芒果雪霜歐蕾": 95,
                 "塩雪芒果芝士": 95,
@@ -692,6 +696,26 @@
             return item === '鮮榨蘋果歐蕾';
         }
 
+        // 檢查是否為季節限定
+        function isSeasonalLimited(category) {
+            return category === '季節限定';
+        }
+
+        // 檢查是否為三窨芒果綠茶
+        function isMangoGreenTea(item) {
+            return item === '三窨芒果綠茶';
+        }
+
+        // 檢查是否為四季春芒果青茶
+        function isMangoBaozhongTea(item) {
+            return item === '四季芒果青茶';
+        }
+
+        // 檢查是否為芒果系列（不能無糖）
+        function isMangoSeries(item) {
+            return item === '三窨芒果綠茶' || item === '四季芒果青茶';
+        }
+
         // 更新冰塊選項
         function updateIceOptions(category) {
             const iceSelect = document.getElementById('iceSelect');
@@ -737,12 +761,89 @@
             }
         }
 
+        // 更新甜度選項
+        function updateSweetnessOptions(item) {
+            const sweetnessSelect = document.getElementById('sweetnessSelect');
+            
+            // 清除所有選項
+            sweetnessSelect.innerHTML = '';
+            
+            if (isMangoSeries(item)) {
+                // 芒果系列：最少微糖
+                const mangoSweetnessOptions = [
+                    { value: '正常甜', text: '正常甜' },
+                    { value: '少糖', text: '少糖' },
+                    { value: '半糖', text: '半糖' },
+                    { value: '微糖', text: '微糖' },
+                    { value: '1分糖', text: '1分糖' }
+                ];
+                
+                mangoSweetnessOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    sweetnessSelect.appendChild(optionElement);
+                });
+                
+                sweetnessSelect.value = '正常甜';
+            } else {
+                // 其他品項：正常選項
+                const normalSweetnessOptions = [
+                    { value: '正常甜', text: '正常甜' },
+                    { value: '少糖', text: '少糖' },
+                    { value: '半糖', text: '半糖' },
+                    { value: '微糖', text: '微糖' },
+                    { value: '1分糖', text: '1分糖' },
+                    { value: '無糖', text: '無糖' }
+                ];
+                
+                normalSweetnessOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    sweetnessSelect.appendChild(optionElement);
+                });
+                
+                sweetnessSelect.value = '正常甜';
+            }
+        }
+
+        // 重置甜度選項為預設（包含無糖）
+        function resetSweetnessOptions() {
+            const sweetnessSelect = document.getElementById('sweetnessSelect');
+            
+            // 清除所有選項
+            sweetnessSelect.innerHTML = '';
+            
+            // 預設的完整甜度選項
+            const defaultSweetnessOptions = [
+                { value: '正常甜', text: '正常甜' },
+                { value: '少糖', text: '少糖' },
+                { value: '半糖', text: '半糖' },
+                { value: '微糖', text: '微糖' },
+                { value: '1分糖', text: '1分糖' },
+                { value: '無糖', text: '無糖' }
+            ];
+            
+            defaultSweetnessOptions.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.text;
+                sweetnessSelect.appendChild(optionElement);
+            });
+            
+            sweetnessSelect.value = '正常甜';
+        }
+
         // 更新選項狀態
         function updateOptionsForItem(item, category) {
             const sweetnessSelect = document.getElementById('sweetnessSelect');
             const iceSelect = document.getElementById('iceSelect');
             const specialNotice = document.getElementById('specialNotice');
             const noticeText = document.getElementById('noticeText');
+            
+            // 先更新甜度選項
+            updateSweetnessOptions(item);
             
             if (isAppleAuLait(item)) {
                 // 蘋果歐蕾：固定甜度和冰塊
@@ -753,14 +854,33 @@
                 
                 specialNotice.style.display = 'block';
                 noticeText.textContent = '蘋果歐蕾的甜度和冰塊已固定，無法調整。';
+            } else if (isSeasonalLimited(category) && (!isMangoGreenTea(item) && !isMangoBaozhongTea(item))) {
+                // 季節限定（除了三窨芒果綠茶和四季芒果青茶）：固定甜度和冰塊
+                sweetnessSelect.disabled = true;
+                iceSelect.disabled = true;
+                sweetnessSelect.value = '正常甜';
+                iceSelect.value = '正常冰';
+                
+                specialNotice.style.display = 'block';
+                noticeText.textContent = '此季節限定飲品的甜度和冰塊已固定，無法調整。';
             } else {
                 // 其他品項：正常調整
                 sweetnessSelect.disabled = false;
                 iceSelect.disabled = false;
                 
+                let noticeMessages = [];
+                        
                 if (isSaltSnowSeries(category)) {
+                    noticeMessages.push('塩雪系列最低冰量為微冰，無法選擇去冰、溫飲或熱飲');
+                }
+                
+                if (isMangoSeries(item)) {
+                    noticeMessages.push('芒果系列最低甜度為1分糖，無法選擇無糖');
+                }
+                
+                if (noticeMessages.length > 0) {
                     specialNotice.style.display = 'block';
-                    noticeText.textContent = '塩雪系列最低冰量為微冰，無法選擇去冰、溫飲或熱飲。';
+                    noticeText.textContent = noticeMessages.join('；') + '。';
                 } else {
                     specialNotice.style.display = 'none';
                 }
@@ -1072,6 +1192,9 @@
                     // 更新冰塊選項
                     updateIceOptions(category);
                     
+                    // 重置甜度選項為預設
+                    resetSweetnessOptions();
+                    
                     Object.keys(menuData[category]).forEach(item => {
                         const option = document.createElement('option');
                         option.value = item;
@@ -1107,6 +1230,9 @@
                     quantityInput.disabled = true;
                     addBtn.disabled = true;
                     specialNotice.style.display = 'none';
+                    
+                    // 重置甜度選項為預設
+                    resetSweetnessOptions();
                 }
             });
 
