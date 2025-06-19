@@ -589,7 +589,7 @@
                 "青釀脆梅綠": 55,
                 "鮮榨檸檬紅茶": 55,
                 "鮮榨檸檬綠茶": 55,
-                "鮮榨檸檬清查": 55,
+                "鮮榨檸檬青茶": 55,
                 "鮮甘蔗青茶": 60,
                 "鮮甘蔗檸檬": 65,
                 "翡翠凍檸檬": 55,
@@ -716,9 +716,19 @@
             return item === '四季芒果青茶';
         }
 
+        // 檢查是否為冰淇淋紅茶
+        function isIcecreamBlackTea(item) {
+            return item === '冰淇淋紅茶';
+        }
+
         // 檢查是否為芒果系列（不能無糖）
         function isMangoSeries(item) {
             return item === '三窨芒果綠茶' || item === '四季芒果青茶';
+        }
+
+        // 檢查是否可以做冰沙
+        function isSmoothie(item) {
+            return item === '翡翠凍檸檬' || item === '桃氣檸檬' || item === '金鑽蜜鳳梨' || item === '澄市水果茶';
         }
 
         // 更新冰塊選項（同時考慮分類和品項）
@@ -758,7 +768,39 @@
                     optionElement.textContent = option.text;
                     iceSelect.appendChild(optionElement);
                 });
+            } else if (item && isIcecreamBlackTea(item)) {
+                // 冰淇淋紅茶不能溫飲或熱飲
+                const IcecreamBlackTeaIceOptions = [
+                    { value: '正常冰', text: '正常冰' },
+                    { value: '少冰', text: '少冰' },
+                    { value: '微冰', text: '微冰' },
+                    { value: '去冰', text: '去冰' }
+                ];
                 
+                IcecreamBlackTeaIceOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    iceSelect.appendChild(optionElement);
+                });
+                    
+            } else if (item && isSmoothie(item)) {
+                // 可以做冰沙
+                const IcecreamBlackTeaIceOptions = [
+                    { value: '正常冰', text: '正常冰' },
+                    { value: '少冰', text: '少冰' },
+                    { value: '微冰', text: '微冰' },
+                    { value: '去冰', text: '去冰' },
+                    { value: '冰沙', text: '冰沙' }
+                ];
+                
+                IcecreamBlackTeaIceOptions.forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.text;
+                    iceSelect.appendChild(optionElement);
+                });
+                    
             } else {
                 // 其他系列：正常選項
                 const normalIceOptions = [
@@ -901,6 +943,10 @@
                 if (isMangoSeries(item)) {
                     noticeMessages.push('芒果系列最低甜度為1分糖，無法選擇無糖');
                     noticeMessages.push('芒果系列無法選擇溫飲或熱飲');
+                }
+
+                if (isIcecreamBlackTea(item)) {
+                    noticeMessages.push('冰淇淋紅茶無法選擇溫飲或熱飲');
                 }
                 
                 if (noticeMessages.length > 0) {
