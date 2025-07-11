@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧋 小澄市</title>
+    <title>🧋 多店家茶飲訂購系統</title>
     <style>
         body {
             font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -73,6 +73,106 @@
             font-size: 14px;
         }
         
+        .role-selector {
+            margin-bottom: 20px;
+        }
+        
+        .role-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .role-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .admin-panel {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 40px;
+            display: none;
+        }
+        
+        .admin-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .store-selection {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .store-selection h3 {
+            margin: 0 0 15px 0;
+            color: #2d5a2d;
+        }
+        
+        .store-option {
+            margin-bottom: 10px;
+        }
+        
+        .store-option input[type="radio"] {
+            margin-right: 10px;
+        }
+        
+        .store-option label {
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .admin-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .admin-buttons button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -96,6 +196,16 @@
             font-size: 24px;
         }
         
+        .store-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 5px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
         .logout-btn {
             position: absolute;
             top: 20px;
@@ -113,9 +223,26 @@
             background: rgba(255,255,255,0.3);
         }
         
-        .status-indicator {
+        .admin-switch {
             position: absolute;
             top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .admin-switch:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 70px;
             left: 20px;
             padding: 8px 16px;
             border-radius: 20px;
@@ -249,7 +376,7 @@
             margin-bottom: 20px;
         }
         
-        .admin-title {
+        .admin-controls-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 10px;
@@ -337,7 +464,7 @@
         }
         
         @media (max-width: 768px) {
-            .login-container {
+            .login-container, .admin-panel {
                 margin: 20px auto;
                 padding: 30px 20px;
             }
@@ -360,31 +487,72 @@
                 min-width: auto;
                 width: 100%;
             }
+            
+            .admin-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <!-- 登入頁面 -->
     <div id="loginPage" class="login-container">
-        <div class="login-title">🧋 小澄市</div>
-        <div class="login-subtitle">請輸入密碼以繼續</div>
+        <div class="login-title">🧋 多店家茶飲訂購系統</div>
+        <div class="login-subtitle">請選擇身份並輸入密碼</div>
+        
+        <div class="role-selector">
+            <label>選擇身份：</label>
+            <select id="roleSelect">
+                <option value="user">一般使用者</option>
+                <option value="admin">管理員</option>
+            </select>
+        </div>
+        
         <input type="password" id="passwordInput" class="password-input" placeholder="請輸入密碼" />
         <button id="loginBtn" class="login-btn">登入</button>
         <div id="loginError" class="error-message" style="display: none;"></div>
     </div>
 
+    <!-- 管理員面板 -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="admin-title">🔧 管理員控制面板</div>
+        
+        <div class="store-selection">
+            <h3>選擇今日營業店家：</h3>
+            <div class="store-option">
+                <input type="radio" id="store1" name="selectedStore" value="小澄市">
+                <label for="store1">🧋 小澄市</label>
+            </div>
+            <div class="store-option">
+                <input type="radio" id="store2" name="selectedStore" value="50嵐">
+                <label for="store2">🧋 50嵐</label>
+            </div>
+            <div class="store-option">
+                <input type="radio" id="store2" name="selectedStore" value="南海茶道">
+                <label for="store2">🧋 南海茶道</label>
+            </div>
+        </div>
+        
+        <div class="admin-buttons">
+            <button id="confirmStoreBtn" class="btn-primary">確認並開始營業</button>
+            <button id="backToLoginBtn" class="btn-secondary">返回登入</button>
+        </div>
+    </div>
+
     <!-- 主要系統頁面 -->
     <div id="mainPage" class="container">
         <div class="header">
-            <h1>🧋 小澄市</h1>
+            <h1>🧋 多店家茶飲訂購系統</h1>
+            <div id="currentStoreName" class="store-name">載入中...</div>
             <p>即時同步，多人協作點餐</p>
+            <button id="adminSwitchBtn" class="admin-switch">管理員模式</button>
             <button id="logoutBtn" class="logout-btn">登出</button>
             <div id="statusIndicator" class="status-indicator status-loading">連接中...</div>
         </div>
         
         <!-- 管理者控制面板 -->
-        <div class="admin-controls">
-            <div class="admin-title">📊 管理者控制面板</div>
+        <div class="admin-controls" id="adminControls" style="display: none;">
+            <div class="admin-controls-title">📊 管理者控制面板</div>
             <div class="control-group">
                 <button id="exportBtn" class="btn-success">匯出所有訂單 CSV</button>
                 <button id="clearBtn" class="btn-danger">清空所有訂單</button>
@@ -398,13 +566,6 @@
                 <label>選擇分類：</label>
                 <select id="categorySelect">
                     <option value="">請選擇分類</option>
-                    <option value="原沏小茶園">原沏小茶園</option>
-                    <option value="澄市小牧場">澄市小牧場</option>
-                    <option value="鮮採小澄果">鮮採小澄果</option>
-                    <option value="醇韻奶茶">醇韻奶茶</option>
-                    <option value="塩雪澄市">塩雪澄市</option>
-                    <option value="澄凍澄市">澄凍澄市</option>
-                    <option value="季節限定">季節限定</option>
                 </select>
             </div>
             
@@ -448,39 +609,8 @@
                 
                 <div class="option-section">
                     <label>加料：</label>
-                    <div class="toppings-grid">
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping1" value="珍珠" data-price="10">
-                            <label for="topping1">珍珠 (+$10)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping2" value="椰果" data-price="10">
-                            <label for="topping2">椰果 (+$10)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping3" value="布丁" data-price="15">
-                            <label for="topping3">布丁 (+$15)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping4" value="仙草" data-price="10">
-                            <label for="topping4">仙草 (+$10)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping5" value="愛玉" data-price="15">
-                            <label for="topping5">愛玉 (+$15)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping6" value="蘆薈" data-price="10">
-                            <label for="topping6">蘆薈 (+$10)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping7" value="奶蓋" data-price="20">
-                            <label for="topping7">奶蓋 (+$20)</label>
-                        </div>
-                        <div class="topping-item">
-                            <input type="checkbox" id="topping8" value="鮮奶" data-price="15">
-                            <label for="topping8">鮮奶 (+$15)</label>
-                        </div>
+                    <div class="toppings-grid" id="toppingsGrid">
+                        <!-- 加料選項會根據店家動態生成 -->
                     </div>
                 </div>
                 
@@ -546,10 +676,13 @@
     </div>
 
     <script type="module">
-        // 密碼設定（您可以修改這個密碼）
-        const SYSTEM_PASSWORD = 'hy123';
+        // 密碼設定
+        const PASSWORDS = {
+            user: 'hy123',
+            admin: 'admin123'
+        };
         
-        // Firebase 設定（已內嵌）
+        // Firebase 設定
         const firebaseConfig = {
             "apiKey": "AIzaSyC6BlzAWm2PFBRJrtzySyI0spJrk-DIuvA",
             "authDomain": "order-collect-eb163.firebaseapp.com",
@@ -563,85 +696,247 @@
         // 全域變數
         let db = null;
         let ordersRef = null;
+        let storeConfigRef = null;
         let unsubscribe = null;
+        let storeUnsubscribe = null;
+        let currentUserRole = null;
+        let currentStore = null;
         
-        const menuData = {
-            "原沏小茶園": {
-                "復刻紅茶": 35,
-                "金萱蜜香紅茶": 35,
-                "黃金穀蕎麥": 40,
-                "四季春青茶": 35,
-                "三窨茉莉綠茶": 35
+        // 店家菜單資料
+        const storeMenus = {
+            "小澄市": {
+                name: "🧋 小澄市",
+                categories: {
+                    "原沏小茶園": {
+                        "復刻紅茶": 35,
+                        "金萱蜜香紅茶": 35,
+                        "黃金穀蕎麥": 40,
+                        "四季春青茶": 35,
+                        "三窨茉莉綠茶": 35
+                    },
+                    "澄市小牧場": {
+                        "金萱鮮奶茶": 65,
+                        "春芽鮮奶青": 65,
+                        "三窨茉莉鮮奶綠": 65,
+                        "黃金穀蕎麥鮮奶茶": 65,
+                        "法式可可鮮奶茶": 85,
+                        "靜岡抹茶鮮奶": 85,
+                        "鮮榨蘋果歐蕾": 95
+                    },
+                    "鮮採小澄果": {
+                        "鮮百香果綠": 60,
+                        "百香波波綠": 70,
+                        "鮮柳橙綠茶": 70,
+                        "青釀脆梅綠": 55,
+                        "鮮榨檸檬紅茶": 55,
+                        "鮮榨檸檬綠茶": 55,
+                        "鮮榨檸檬青茶": 55,
+                        "鮮甘蔗青茶": 60,
+                        "鮮甘蔗檸檬": 65,
+                        "翡翠凍檸檬": 55,
+                        "桃氣檸檬": 60,
+                        "金鑽蜜鳳梨": 60,
+                        "澄市水果茶": 70,
+                        "鮮榨蘋果紅玉": 85,
+                        "鮮榨蘋果綠茶": 85,
+                        "鮮榨蘋果青茶": 85
+                    },
+                    "醇韻奶茶": {
+                        "復刻奶茶": 50,
+                        "奶茶(綠)": 50,
+                        "奶茶(青)": 50,
+                        "黃金穀蕎麥奶茶": 55,
+                        "冰淇淋紅茶": 50,
+                        "珍珠奶茶": 55,
+                        "翡翠凍奶綠": 60,
+                        "波波四季奶青": 65
+                    },
+                    "塩雪澄市": {
+                        "塩雪黃金穀蕎麥": 65,
+                        "塩雪金萱蜜香紅": 60,
+                        "塩雪三窨茉莉綠": 60,
+                        "塩雪四季春青": 60,
+                        "塩雪可可脆片": 95,
+                        "塩雪抹茶之士": 95
+                    },
+                    "澄凍澄市": {
+                        "澄凍茉莉綠": 45,
+                        "澄凍柳橙綠": 80,
+                        "澄凍甘蔗檸檬": 75,
+                        "澄凍香檸綠": 60,
+                        "澄凍鮮奶綠": 75
+                    },
+                    "季節限定": {
+                        "四季芒果青茶": 70,
+                        "三窨芒果綠茶": 70,
+                        "楊枝甘露": 95,
+                        "芒果雪霜歐蕾": 95,
+                        "塩雪芒果芝士": 95,
+                        "奇異果波波": 90
+                    }
+                },
+                toppings: [
+                    { name: "珍珠", price: 10 },
+                    { name: "椰果", price: 10 },
+                    { name: "布丁", price: 15 },
+                    { name: "仙草", price: 10 },
+                    { name: "愛玉", price: 15 },
+                    { name: "蘆薈", price: 10 },
+                    { name: "奶蓋", price: 20 },
+                    { name: "鮮奶", price: 15 }
+                ]
             },
-            "澄市小牧場": {
-                "金萱鮮奶茶": 65,
-                "春芽鮮奶青": 65,
-                "三窨茉莉鮮奶綠": 65,
-                "黃金穀蕎麥鮮奶茶": 65,
-                "法式可可鮮奶茶": 85,
-                "靜岡抹茶鮮奶": 85,
-                "鮮榨蘋果歐蕾": 95
+            "50嵐": {
+                name: "🧋 50嵐",
+                categories: {
+                    "賞味茶品": {
+                        "蒸青綠茶": 35,
+                        "烏龍紅茶": 35,
+                        "高山烏龍青": 35,
+                        "奶香金萱茶": 40,
+                        "熟香烏龍茶": 40,
+                        "龍焙功夫茶": 40
+                    },
+                    "鮮奶茶系列": {
+                        "鮮奶紅茶": 60,
+                        "鮮奶綠茶": 60,
+                        "金萱鮮奶茶": 65,
+                        "熟香鮮奶茶": 65,
+                        "龍焙鮮奶茶": 65
+                    },
+                    "養樂多系列": {
+                        "養樂多綠茶": 55,
+                        "養樂多青茶": 55,
+                        "養樂多金萱": 60
+                    },
+                    "蜂蜜系列": {
+                        "蜂蜜紅茶": 55,
+                        "蜂蜜綠茶": 55,
+                        "紅茶雪泡": 35,
+                        "奶茶雪泡": 50,
+                        "奶綠雪泡": 50,
+                        "巧克力雪泡": 55
+                    },
+                    "招牌系列": {
+                        "50嵐招牌": 50,
+                        "養樂多綠茶": 45,
+                        "多多綠茶": 45,
+                        "檸檬養樂多": 50,
+                        "蘆薈蜜": 40,
+                        "愛玉檸檬": 45
+                    }
+                },
+                toppings: [
+                    { name: "珍珠", price: 10 },
+                    { name: "椰果", price: 10 },
+                    { name: "布丁", price: 15 },
+                    { name: "仙草", price: 10 },
+                    { name: "愛玉", price: 10 },
+                    { name: "蘆薈", price: 10 },
+                    { name: "波霸", price: 10 },
+                    { name: "寒天", price: 10 }
+                ]
             },
-            "鮮採小澄果": {
-                "鮮百香果綠": 60,
-                "百香波波綠": 70,
-                "鮮柳橙綠茶": 70,
-                "青釀脆梅綠": 55,
-                "鮮榨檸檬紅茶": 55,
-                "鮮榨檸檬綠茶": 55,
-                "鮮榨檸檬青茶": 55,
-                "鮮甘蔗青茶": 60,
-                "鮮甘蔗檸檬": 65,
-                "翡翠凍檸檬": 55,
-                "桃氣檸檬": 60,
-                "金鑽蜜鳳梨": 60,
-                "澄市水果茶": 70,
-                "鮮榨蘋果紅玉": 85,
-                "鮮榨蘋果綠茶": 85,
-                "鮮榨蘋果青茶": 85
-            },
-            "醇韻奶茶": {
-                "復刻奶茶": 50,
-                "奶茶(綠)": 50,
-                "奶茶(青)": 50,
-                "黃金穀蕎麥奶茶": 55,
-                "冰淇淋紅茶": 50,
-                "珍珠奶茶": 55,
-                "翡翠凍奶綠": 60,
-                "波波四季奶青": 65
-            },
-            "塩雪澄市": {
-                "塩雪黃金穀蕎麥": 65,
-                "塩雪金萱蜜香紅": 60,
-                "塩雪三窨茉莉綠": 60,
-                "塩雪四季春青": 60,
-                "塩雪可可脆片": 95,
-                "塩雪抹茶之士":95
-            },
-            "澄凍澄市": {
-                "澄凍茉莉綠": 45,
-                "澄凍柳橙綠": 80,
-                "澄凍甘蔗檸檬": 75,
-                "澄凍香檸綠": 60,
-                "澄凍鮮奶綠": 75
-            },
-            "季節限定": {
-                "四季芒果青茶": 70,
-                "三窨芒果綠茶": 70,
-                "楊枝甘露": 95,
-                "芒果雪霜歐蕾": 95,
-                "塩雪芒果芝士": 95,
-                "奇異果波波": 90
+            "南海茶道": {
+                name: "🧋 南海茶道",
+                categories: {
+                    "現泡茶飲系列-金萱茶": {
+                        "鹿谷金萱": 45,
+                        "杉林溪金萱": 50,
+                        "阿里山金萱": 60
+                    },
+                    "現泡茶飲系列-熱烏龍": {
+                        "鹿谷熱烏龍": 50,
+                        "杉林溪熱烏龍": 55,
+                        "阿里山熱烏龍": 65
+                    },
+                    "現泡茶飲系列-烏龍青": {
+                        "鹿谷烏龍青": 45,
+                        "杉林溪烏龍青": 50,
+                        "阿里山烏龍青": 60,
+                        "梨山烏龍青": 85
+                    },
+                    "現泡茶飲系列-龍焙茶": {
+                        "鹿谷龍焙茶": 55,
+                        "杉林溪龍焙茶": 60,
+                        "阿里山龍焙茶": 75,
+                        "梨山龍焙茶": 95
+                    },
+                    "現泡茶飲系列-窨花茶": {
+                        "桂花烏龍": 60,
+                        "茉莉包種": 55
+                    },
+                    "現泡茶飲系列-熟成茶": {
+                        "魚池紅玉": 60,
+                        "瑞穗蜜香紅茶": 60,
+                        "峨眉東方美人": 60
+                    },
+                    "原茶調飲系列-營味茶品": {
+                        "蒸青綠茶": 35,
+                        "烏龍紅茶": 35,
+                        "高山烏龍青": 35,
+                        "奶香金萱茶": 40,
+                        "熟香烏龍茶": 40,
+                        "龍焙功夫茶": 40
+                    },
+                    "原茶調飲系列-蜂蜜系列": {
+                        "蜂蜜紅茶": 55,
+                        "蜂蜜綠茶": 55,
+                        "蜂蜜金萱茶": 60,
+                        "蜂蜜鮮奶紅茶": 80,
+                        "蜂蜜鮮奶綠茶": 80,
+                        "蜂蜜鮮奶金萱": 85,
+                        "蜂蜜鮮奶龍焙": 85
+                    },
+                    "原茶調飲系列-鮮奶茶系列": {
+                        "鮮奶紅茶": 60,
+                        "鮮奶綠茶": 60,
+                        "金萱鮮奶茶": 65,
+                        "熟香鮮奶茶": 65,
+                        "龍焙鮮奶茶": 65
+                    },
+                    "原茶調飲系列-養樂多系列": {
+                        "養樂多綠茶": 55,
+                        "養樂多青茶": 55,
+                        "養樂多金萱": 60
+                    },
+                    "台灣果香系列": {
+                        "檸檬紅茶": 55,
+                        "檸檬綠茶": 55,
+                        "蜂蜜檸檬": 70,
+                        "柳丁綠茶": 65,
+                        "柳丁青茶": 65,
+                        "柳丁金萱": 70
+                    },
+                    "冬瓜茶系列": {
+                        "冬瓜茶": 35,
+                        "冬瓜青茶": 50,
+                        "冬瓜檸檬": 55,
+                        "冬瓜鮮奶": 60
+                    }
+                },
+                toppings: [
+                    { name: "珍珠", price: 10 },
+                    { name: "椰果", price: 10 },
+                    { name: "布丁", price: 15 },
+                    { name: "仙草", price: 15 }
+                ]
             }
         };
 
         // DOM 元素
         const loginPage = document.getElementById('loginPage');
+        const adminPanel = document.getElementById('adminPanel');
         const mainPage = document.getElementById('mainPage');
+        const roleSelect = document.getElementById('roleSelect');
         const passwordInput = document.getElementById('passwordInput');
         const loginBtn = document.getElementById('loginBtn');
         const loginError = document.getElementById('loginError');
+        const confirmStoreBtn = document.getElementById('confirmStoreBtn');
+        const backToLoginBtn = document.getElementById('backToLoginBtn');
+        const adminSwitchBtn = document.getElementById('adminSwitchBtn');
         const logoutBtn = document.getElementById('logoutBtn');
+        const currentStoreName = document.getElementById('currentStoreName');
         const statusIndicator = document.getElementById('statusIndicator');
         const categorySelect = document.getElementById('categorySelect');
         const itemSelect = document.getElementById('itemSelect');
@@ -649,6 +944,7 @@
         const optionsGroup = document.getElementById('optionsGroup');
         const sweetnessSelect = document.getElementById('sweetnessSelect');
         const iceSelect = document.getElementById('iceSelect');
+        const toppingsGrid = document.getElementById('toppingsGrid');
         const quantityInput = document.getElementById('quantity');
         const addBtn = document.getElementById('addBtn');
         const orderTableBody = document.getElementById('orderTableBody');
@@ -658,10 +954,21 @@
 
         // 登入功能
         function checkPassword() {
+            const selectedRole = roleSelect.value;
             const inputPassword = passwordInput.value.trim();
-            if (inputPassword === SYSTEM_PASSWORD) {
-                localStorage.setItem('teaOrderAuth', 'true');
-                showMainPage();
+            
+            if (inputPassword === PASSWORDS[selectedRole]) {
+                currentUserRole = selectedRole;
+                localStorage.setItem('teaOrderAuth', JSON.stringify({
+                    role: selectedRole,
+                    timestamp: Date.now()
+                }));
+                
+                if (selectedRole === 'admin') {
+                    showAdminPanel();
+                } else {
+                    loadCurrentStore();
+                }
             } else {
                 showError('密碼錯誤，請重新輸入');
                 passwordInput.value = '';
@@ -674,146 +981,329 @@
             loginError.style.display = 'block';
         }
 
+        function showAdminPanel() {
+            loginPage.style.display = 'none';
+            adminPanel.style.display = 'block';
+            loadStoreSelection();
+        }
+
         function showMainPage() {
             loginPage.style.display = 'none';
+            adminPanel.style.display = 'none';
             mainPage.style.display = 'block';
             initializeFirebase();
         }
 
         function logout() {
             localStorage.removeItem('teaOrderAuth');
-            if (unsubscribe) {
-                unsubscribe();
-            }
+            if (unsubscribe) unsubscribe();
+            if (storeUnsubscribe) storeUnsubscribe();
+            
             loginPage.style.display = 'block';
+            adminPanel.style.display = 'none';
             mainPage.style.display = 'none';
             passwordInput.value = '';
             loginError.style.display = 'none';
+            currentUserRole = null;
+            currentStore = null;
         }
 
-        // 檢查是否為塩雪系列
-        function isSaltSnowSeries(category) {
-            return category === '塩雪澄市';
+        // 載入當前店家設定
+        async function loadCurrentStore() {
+            try {
+                statusIndicator.textContent = '載入店家資訊中...';
+                statusIndicator.className = 'status-indicator status-loading';
+                
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+                const { getFirestore, collection, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+                
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                // 嘗試讀取店家設定
+                try {
+                    const storeConfigDoc = await getDoc(doc(db, 'config', 'currentStore'));
+                    
+                    if (storeConfigDoc.exists()) {
+                        currentStore = storeConfigDoc.data().store;
+                        showMainPage();
+                    } else {
+                        // 如果沒有設定，預設使用小澄市
+                        console.log('沒有找到店家設定，使用預設店家');
+                        currentStore = '小澄市';
+                        showMainPage();
+                    }
+                } catch (permissionError) {
+                    // 如果權限不足，使用預設店家
+                    console.log('無法讀取店家設定，使用預設店家:', permissionError);
+                    currentStore = '小澄市';
+                    showMainPage();
+                }
+                
+            } catch (error) {
+                console.error('Firebase 初始化失敗:', error);
+                // 即使 Firebase 初始化失敗，也使用預設店家
+                currentStore = '小澄市';
+                showMainPage();
+            }
         }
 
-        // 檢查是否為蘋果歐蕾
-        function isAppleAuLait(item) {
-            return item === '鮮榨蘋果歐蕾';
+        // 載入店家選擇狀態
+        async function loadStoreSelection() {
+            try {
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+                const { getFirestore, collection, doc, getDoc } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+                
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                try {
+                    const storeConfigDoc = await getDoc(doc(db, 'config', 'currentStore'));
+                    
+                    if (storeConfigDoc.exists()) {
+                        const currentStoreValue = storeConfigDoc.data().store;
+                        const radioButton = document.querySelector(`input[name="selectedStore"][value="${currentStoreValue}"]`);
+                        if (radioButton) {
+                            radioButton.checked = true;
+                        }
+                    }
+                } catch (permissionError) {
+                    console.log('無法讀取店家選擇狀態:', permissionError);
+                    // 預設選擇小澄市
+                    const defaultRadio = document.querySelector('input[name="selectedStore"][value="小澄市"]');
+                    if (defaultRadio) {
+                        defaultRadio.checked = true;
+                    }
+                }
+            } catch (error) {
+                console.error('載入店家選擇失敗:', error);
+                // 預設選擇小澄市
+                const defaultRadio = document.querySelector('input[name="selectedStore"][value="小澄市"]');
+                if (defaultRadio) {
+                    defaultRadio.checked = true;
+                }
+            }
         }
 
-        // 檢查是否為季節限定
-        function isSeasonalLimited(category) {
-            return category === '季節限定';
-        }
-
-        // 檢查是否為三窨芒果綠茶
-        function isMangoGreenTea(item) {
-            return item === '三窨芒果綠茶';
-        }
-
-        // 檢查是否為四季春芒果青茶
-        function isMangoBaozhongTea(item) {
-            return item === '四季芒果青茶';
-        }
-
-        // 檢查是否為冰淇淋紅茶
-        function isIcecreamBlackTea(item) {
-            return item === '冰淇淋紅茶';
-        }
-
-        // 檢查是否為芒果系列（不能無糖）
-        function isMangoSeries(item) {
-            return item === '三窨芒果綠茶' || item === '四季芒果青茶';
-        }
-
-        // 檢查是否可以做冰沙
-        function isSmoothie(item) {
-            return item === '翡翠凍檸檬' || item === '桃氣檸檬' || item === '金鑽蜜鳳梨' || item === '澄市水果茶';
-        }
-
-        // 更新冰塊選項（同時考慮分類和品項）
-        function updateIceOptions(category, item = null) {
-            const iceSelect = document.getElementById('iceSelect');
+        // 確認店家選擇
+        async function confirmStoreSelection() {
+            const selectedStore = document.querySelector('input[name="selectedStore"]:checked');
             
-            // 清除所有選項
+            if (!selectedStore) {
+                alert('請選擇一間店家');
+                return;
+            }
+            
+            try {
+                confirmStoreBtn.disabled = true;
+                confirmStoreBtn.textContent = '設定中...';
+                
+                const { setDoc, doc } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+                
+                try {
+                    await setDoc(doc(db, 'config', 'currentStore'), {
+                        store: selectedStore.value,
+                        updatedAt: new Date(),
+                        updatedBy: 'admin'
+                    });
+                    
+                    currentStore = selectedStore.value;
+                    showMainPage();
+                } catch (permissionError) {
+                    console.log('無法寫入店家設定，使用本地設定:', permissionError);
+                    // 即使無法寫入 Firebase，也允許本地使用選定的店家
+                    currentStore = selectedStore.value;
+                    showMainPage();
+                    alert('店家設定已在本次使用中生效（無法保存到雲端）');
+                }
+                
+            } catch (error) {
+                console.error('設定店家失敗:', error);
+                // 即使失敗也使用選定的店家
+                currentStore = selectedStore.value;
+                showMainPage();
+                alert('店家設定已在本次使用中生效');
+            } finally {
+                confirmStoreBtn.disabled = false;
+                confirmStoreBtn.textContent = '確認並開始營業';
+            }
+        }
+
+        // 初始化菜單
+        function initializeMenu() {
+            if (!currentStore || !storeMenus[currentStore]) {
+                console.error('店家資料不存在:', currentStore);
+                return;
+            }
+            
+            const storeData = storeMenus[currentStore];
+            
+            // 更新店家名稱顯示
+            currentStoreName.textContent = storeData.name;
+            
+            // 更新分類選單
+            categorySelect.innerHTML = '<option value="">請選擇分類</option>';
+            Object.keys(storeData.categories).forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            });
+            
+            // 更新加料選項
+            updateToppingsOptions(storeData.toppings);
+        }
+
+        // 更新加料選項
+        function updateToppingsOptions(toppings) {
+            toppingsGrid.innerHTML = '';
+            
+            toppings.forEach((topping, index) => {
+                const toppingDiv = document.createElement('div');
+                toppingDiv.className = 'topping-item';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `topping${index + 1}`;
+                checkbox.value = topping.name;
+                checkbox.dataset.price = topping.price;
+                
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = `${topping.name} (+${topping.price})`;
+                
+                toppingDiv.appendChild(checkbox);
+                toppingDiv.appendChild(label);
+                toppingsGrid.appendChild(toppingDiv);
+            });
+        }
+
+        // 小澄市特殊規則檢查函數
+        function isSaltSnowSeries(category) {
+            return currentStore === '小澄市' && category === '塩雪澄市';
+        }
+
+        function isAppleAuLait(item) {
+            return currentStore === '小澄市' && item === '鮮榨蘋果歐蕾';
+        }
+
+        function isSeasonalLimited(category) {
+            return currentStore === '小澄市' && category === '季節限定';
+        }
+
+        function isMangoGreenTea(item) {
+            return currentStore === '小澄市' && item === '三窨芒果綠茶';
+        }
+
+        function isMangoBaozhongTea(item) {
+            return currentStore === '小澄市' && item === '四季芒果青茶';
+        }
+
+        function isIcecreamBlackTea(item) {
+            return currentStore === '小澄市' && item === '冰淇淋紅茶';
+        }
+
+        function isMangoSeries(item) {
+            return currentStore === '小澄市' && (item === '三窨芒果綠茶' || item === '四季芒果青茶');
+        }
+
+        function isSmoothie(item) {
+            return currentStore === '小澄市' && ['翡翠凍檸檬', '桃氣檸檬', '金鑽蜜鳳梨', '澄市水果茶'].includes(item);
+        }
+
+        // 更新冰塊選項
+        function updateIceOptions(category, item = null) {
             iceSelect.innerHTML = '';
             
-            if (isSaltSnowSeries(category)) {
-                // 塩雪系列：最低冰量是微冰
-                const saltSnowIceOptions = [
-                    { value: '正常冰', text: '正常冰' },
-                    { value: '少冰', text: '少冰' },
-                    { value: '微冰', text: '微冰' }
-                ];
-                
-                saltSnowIceOptions.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.text;
-                    iceSelect.appendChild(optionElement);
-                });
-                
-            } else if (item && isMangoSeries(item)) {
-                // 芒果系列：不能溫飲或熱飲
-                const mangoIceOptions = [
-                    { value: '正常冰', text: '正常冰' },
-                    { value: '少冰', text: '少冰' },
-                    { value: '微冰', text: '微冰' },
-                    { value: '去冰', text: '去冰' }
-                ];
-                
-                mangoIceOptions.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.text;
-                    iceSelect.appendChild(optionElement);
-                });
-            } else if (item && isIcecreamBlackTea(item)) {
-                // 冰淇淋紅茶不能溫飲或熱飲
-                const IcecreamBlackTeaIceOptions = [
-                    { value: '正常冰', text: '正常冰' },
-                    { value: '少冰', text: '少冰' },
-                    { value: '微冰', text: '微冰' },
-                    { value: '去冰', text: '去冰' }
-                ];
-                
-                IcecreamBlackTeaIceOptions.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.text;
-                    iceSelect.appendChild(optionElement);
-                });
+            if (currentStore === '小澄市') {
+                // 小澄市的特殊規則
+                if (isSaltSnowSeries(category)) {
+                    const saltSnowIceOptions = [
+                        { value: '正常冰', text: '正常冰' },
+                        { value: '少冰', text: '少冰' },
+                        { value: '微冰', text: '微冰' }
+                    ];
                     
-            } else if (item && isSmoothie(item)) {
-                // 可以做冰沙
-                const IcecreamBlackTeaIceOptions = [
-                    { value: '正常冰', text: '正常冰' },
-                    { value: '少冰', text: '少冰' },
-                    { value: '微冰', text: '微冰' },
-                    { value: '去冰', text: '去冰' },
-                    { value: '冰沙', text: '冰沙' }
-                ];
-                
-                IcecreamBlackTeaIceOptions.forEach(option => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.text;
-                    iceSelect.appendChild(optionElement);
-                });
+                    saltSnowIceOptions.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        iceSelect.appendChild(optionElement);
+                    });
+                } else if (item && isMangoSeries(item)) {
+                    const mangoIceOptions = [
+                        { value: '正常冰', text: '正常冰' },
+                        { value: '少冰', text: '少冰' },
+                        { value: '微冰', text: '微冰' },
+                        { value: '去冰', text: '去冰' }
+                    ];
                     
+                    mangoIceOptions.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        iceSelect.appendChild(optionElement);
+                    });
+                } else if (item && isIcecreamBlackTea(item)) {
+                    const icecreamBlackTeaIceOptions = [
+                        { value: '正常冰', text: '正常冰' },
+                        { value: '少冰', text: '少冰' },
+                        { value: '微冰', text: '微冰' },
+                        { value: '去冰', text: '去冰' }
+                    ];
+                    
+                    icecreamBlackTeaIceOptions.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        iceSelect.appendChild(optionElement);
+                    });
+                } else if (item && isSmoothie(item)) {
+                    const smoothieIceOptions = [
+                        { value: '正常冰', text: '正常冰' },
+                        { value: '少冰', text: '少冰' },
+                        { value: '微冰', text: '微冰' },
+                        { value: '去冰', text: '去冰' },
+                        { value: '冰沙', text: '冰沙' }
+                    ];
+                    
+                    smoothieIceOptions.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        iceSelect.appendChild(optionElement);
+                    });
+                } else {
+                    // 小澄市的正常選項
+                    const normalIceOptions = [
+                        { value: '正常冰', text: '正常冰' },
+                        { value: '少冰', text: '少冰' },
+                        { value: '微冰', text: '微冰' },
+                        { value: '去冰', text: '去冰' },
+                        { value: '完全去冰', text: '完全去冰' },
+                        { value: '溫飲', text: '溫飲' },
+                        { value: '熱飲', text: '熱飲' }
+                    ];
+                    
+                    normalIceOptions.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option.value;
+                        optionElement.textContent = option.text;
+                        iceSelect.appendChild(optionElement);
+                    });
+                }
             } else {
-                // 其他系列：正常選項
-                const normalIceOptions = [
+                // 其他店家（如50嵐）的標準冰塊選項
+                const standardIceOptions = [
                     { value: '正常冰', text: '正常冰' },
                     { value: '少冰', text: '少冰' },
                     { value: '微冰', text: '微冰' },
                     { value: '去冰', text: '去冰' },
-                    { value: '完全去冰', text: '完全去冰' },
                     { value: '溫飲', text: '溫飲' },
                     { value: '熱飲', text: '熱飲' }
                 ];
                 
-                normalIceOptions.forEach(option => {
+                standardIceOptions.forEach(option => {
                     const optionElement = document.createElement('option');
                     optionElement.value = option.value;
                     optionElement.textContent = option.text;
@@ -825,14 +1315,11 @@
         }
 
         // 更新甜度選項
-        function updateSweetnessOptions(item) {
-            const sweetnessSelect = document.getElementById('sweetnessSelect');
-            
-            // 清除所有選項
+        function updateSweetnessOptions(item = null) {
             sweetnessSelect.innerHTML = '';
             
-            if (isMangoSeries(item)) {
-                // 芒果系列：最少微糖
+            if (currentStore === '小澄市' && item && isMangoSeries(item)) {
+                // 小澄市芒果系列：最少微糖
                 const mangoSweetnessOptions = [
                     { value: '正常甜', text: '正常甜' },
                     { value: '少糖', text: '少糖' },
@@ -847,10 +1334,8 @@
                     optionElement.textContent = option.text;
                     sweetnessSelect.appendChild(optionElement);
                 });
-                
-                sweetnessSelect.value = '正常甜';
             } else {
-                // 其他品項：正常選項
+                // 標準甜度選項
                 const normalSweetnessOptions = [
                     { value: '正常甜', text: '正常甜' },
                     { value: '少糖', text: '少糖' },
@@ -866,95 +1351,65 @@
                     optionElement.textContent = option.text;
                     sweetnessSelect.appendChild(optionElement);
                 });
-                
-                sweetnessSelect.value = '正常甜';
             }
-        }
-
-        // 重置甜度選項為預設（包含無糖）
-        function resetSweetnessOptions() {
-            const sweetnessSelect = document.getElementById('sweetnessSelect');
-            
-            // 清除所有選項
-            sweetnessSelect.innerHTML = '';
-            
-            // 預設的完整甜度選項
-            const defaultSweetnessOptions = [
-                { value: '正常甜', text: '正常甜' },
-                { value: '少糖', text: '少糖' },
-                { value: '半糖', text: '半糖' },
-                { value: '微糖', text: '微糖' },
-                { value: '1分糖', text: '1分糖' },
-                { value: '無糖', text: '無糖' }
-            ];
-            
-            defaultSweetnessOptions.forEach(option => {
-                const optionElement = document.createElement('option');
-                optionElement.value = option.value;
-                optionElement.textContent = option.text;
-                sweetnessSelect.appendChild(optionElement);
-            });
             
             sweetnessSelect.value = '正常甜';
         }
 
         // 更新選項狀態
         function updateOptionsForItem(item, category) {
-            const sweetnessSelect = document.getElementById('sweetnessSelect');
-            const iceSelect = document.getElementById('iceSelect');
-            const specialNotice = document.getElementById('specialNotice');
-            const noticeText = document.getElementById('noticeText');
-            
-            // 先更新甜度選項
             updateSweetnessOptions(item);
-            
-            // 再更新冰塊選項（傳入品項參數）
             updateIceOptions(category, item);
             
-            if (isAppleAuLait(item)) {
-                // 蘋果歐蕾：固定甜度和冰塊
-                sweetnessSelect.disabled = true;
-                iceSelect.disabled = true;
-                sweetnessSelect.value = '正常甜';
-                iceSelect.value = '正常冰';
-                
-                specialNotice.style.display = 'block';
-                noticeText.textContent = '蘋果歐蕾的甜度和冰塊已固定，無法調整。';
-            } else if (isSeasonalLimited(category) && (!isMangoGreenTea(item) && !isMangoBaozhongTea(item))) {
-                // 季節限定（除了三窨芒果綠茶和四季芒果青茶）：固定甜度和冰塊
-                sweetnessSelect.disabled = true;
-                iceSelect.disabled = true;
-                sweetnessSelect.value = '正常甜';
-                iceSelect.value = '正常冰';
-                
-                specialNotice.style.display = 'block';
-                noticeText.textContent = '此季節限定飲品的甜度和冰塊已固定，無法調整。';
+            if (currentStore === '小澄市') {
+                // 小澄市的特殊規則
+                if (isAppleAuLait(item)) {
+                    sweetnessSelect.disabled = true;
+                    iceSelect.disabled = true;
+                    sweetnessSelect.value = '正常甜';
+                    iceSelect.value = '正常冰';
+                    
+                    specialNotice.style.display = 'block';
+                    noticeText.textContent = '蘋果歐蕾的甜度和冰塊已固定，無法調整。';
+                } else if (isSeasonalLimited(category) && (!isMangoGreenTea(item) && !isMangoBaozhongTea(item))) {
+                    sweetnessSelect.disabled = true;
+                    iceSelect.disabled = true;
+                    sweetnessSelect.value = '正常甜';
+                    iceSelect.value = '正常冰';
+                    
+                    specialNotice.style.display = 'block';
+                    noticeText.textContent = '此季節限定飲品的甜度和冰塊已固定，無法調整。';
+                } else {
+                    sweetnessSelect.disabled = false;
+                    iceSelect.disabled = false;
+                    
+                    let noticeMessages = [];
+                    
+                    if (isSaltSnowSeries(category)) {
+                        noticeMessages.push('塩雪系列最低冰量為微冰，無法選擇去冰、溫飲或熱飲');
+                    }
+                    
+                    if (isMangoSeries(item)) {
+                        noticeMessages.push('芒果系列最低甜度為1分糖，無法選擇無糖');
+                        noticeMessages.push('芒果系列無法選擇溫飲或熱飲');
+                    }
+
+                    if (isIcecreamBlackTea(item)) {
+                        noticeMessages.push('冰淇淋紅茶無法選擇溫飲或熱飲');
+                    }
+                    
+                    if (noticeMessages.length > 0) {
+                        specialNotice.style.display = 'block';
+                        noticeText.textContent = noticeMessages.join('；') + '。';
+                    } else {
+                        specialNotice.style.display = 'none';
+                    }
+                }
             } else {
-                // 其他品項：正常調整
+                // 其他店家沒有特殊限制
                 sweetnessSelect.disabled = false;
                 iceSelect.disabled = false;
-                
-                let noticeMessages = [];
-                        
-                if (isSaltSnowSeries(category)) {
-                    noticeMessages.push('塩雪系列最低冰量為微冰，無法選擇去冰、溫飲或熱飲');
-                }
-                
-                if (isMangoSeries(item)) {
-                    noticeMessages.push('芒果系列最低甜度為1分糖，無法選擇無糖');
-                    noticeMessages.push('芒果系列無法選擇溫飲或熱飲');
-                }
-
-                if (isIcecreamBlackTea(item)) {
-                    noticeMessages.push('冰淇淋紅茶無法選擇溫飲或熱飲');
-                }
-                
-                if (noticeMessages.length > 0) {
-                    specialNotice.style.display = 'block';
-                    noticeText.textContent = noticeMessages.join('；') + '。';
-                } else {
-                    specialNotice.style.display = 'none';
-                }
+                specialNotice.style.display = 'none';
             }
         }
 
@@ -964,25 +1419,37 @@
                 statusIndicator.textContent = '連接中...';
                 statusIndicator.className = 'status-indicator status-loading';
                 
-                // 動態載入 Firebase SDK
                 const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
                 const { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
                 
-                // 將 Firebase 函數存為全域變數
                 window.firebaseFunctions = { addDoc, deleteDoc, doc, getDocs };
                 
-                // 初始化 Firebase
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 ordersRef = collection(db, 'orders');
                 
-                // 設定即時監聽
+                // 監聽當前店家變更（如果有權限的話）
+                try {
+                    storeUnsubscribe = onSnapshot(doc(db, 'config', 'currentStore'), (doc) => {
+                        if (doc.exists()) {
+                            const newStore = doc.data().store;
+                            if (newStore !== currentStore) {
+                                currentStore = newStore;
+                                initializeMenu();
+                                resetForm();
+                            }
+                        }
+                    });
+                } catch (permissionError) {
+                    console.log('無法監聽店家變更，使用當前設定:', permissionError);
+                }
+                
                 const q = query(ordersRef, orderBy('timestamp', 'desc'));
                 unsubscribe = onSnapshot(q, (querySnapshot) => {
                     const orders = [];
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
-                        if (!data.test) {  // 排除測試資料
+                        if (!data.test && data.store === currentStore) {
                             orders.push({
                                 id: doc.id,
                                 ...data
@@ -997,13 +1464,51 @@
                 statusIndicator.textContent = '已連接';
                 statusIndicator.className = 'status-indicator status-connected';
                 
+                initializeMenu();
                 setupEventListeners();
+                
+                // 根據使用者角色顯示/隱藏管理功能
+                updateUIForUserRole();
                 
             } catch (error) {
                 console.error('Firebase 初始化失敗:', error);
                 statusIndicator.textContent = '連接失敗';
                 statusIndicator.className = 'status-indicator status-disconnected';
             }
+        }
+
+        // 根據使用者角色更新UI
+        function updateUIForUserRole() {
+            const adminControls = document.getElementById('adminControls');
+            const adminSwitchBtn = document.getElementById('adminSwitchBtn');
+            
+            if (currentUserRole === 'admin') {
+                // 管理員：顯示所有管理功能
+                adminControls.style.display = 'block';
+                adminSwitchBtn.style.display = 'block';
+            } else {
+                // 一般使用者：隱藏管理功能
+                adminControls.style.display = 'none';
+                adminSwitchBtn.style.display = 'none';
+            }
+        }
+
+        // 重置表單
+        function resetForm() {
+            categorySelect.value = '';
+            itemSelect.innerHTML = '<option value="">請先選擇分類</option>';
+            itemSelect.disabled = true;
+            customerNameInput.value = '';
+            customerNameInput.disabled = true;
+            optionsGroup.style.display = 'none';
+            quantityInput.value = 1;
+            quantityInput.disabled = true;
+            addBtn.disabled = true;
+            specialNotice.style.display = 'none';
+            
+            // 重置加料選項
+            const toppingInputs = document.querySelectorAll('#toppingsGrid input[type="checkbox"]');
+            toppingInputs.forEach(input => input.checked = false);
         }
 
         // 新增訂單
@@ -1027,10 +1532,9 @@
                 return;
             }
             
-            // 計算加料價格
             const toppings = [];
             let toppingPrice = 0;
-            const toppingInputs = document.querySelectorAll('input[type="checkbox"]:checked');
+            const toppingInputs = document.querySelectorAll('#toppingsGrid input[type="checkbox"]:checked');
             toppingInputs.forEach(input => {
                 toppings.push(input.value);
                 toppingPrice += parseInt(input.dataset.price);
@@ -1045,6 +1549,7 @@
                     addBtn.textContent = '新增中...';
                     
                     const orderData = {
+                        store: currentStore,
                         customerName: customerName,
                         category: category,
                         item: item,
@@ -1061,7 +1566,6 @@
                     
                     await window.firebaseFunctions.addDoc(ordersRef, orderData);
                     
-                    // 重置表單
                     customerNameInput.value = '';
                     quantityInput.value = 1;
                     sweetnessSelect.value = '正常甜';
@@ -1078,8 +1582,13 @@
             }
         }
 
-        // 刪除訂單
+        // 刪除訂單（僅管理員）
         async function removeOrder(orderId) {
+            if (currentUserRole !== 'admin') {
+                alert('此功能僅限管理員使用');
+                return;
+            }
+            
             if (!db || !window.firebaseFunctions) return;
             
             if (confirm('確定要刪除這筆訂單嗎？')) {
@@ -1092,18 +1601,23 @@
             }
         }
 
-        // 清空所有訂單
+        // 清空所有訂單（僅管理員）
         async function clearAllOrders() {
+            if (currentUserRole !== 'admin') {
+                alert('此功能僅限管理員使用');
+                return;
+            }
+            
             if (!db || !window.firebaseFunctions) return;
             
-            if (confirm('確定要清空所有訂單嗎？此操作無法復原！')) {
+            if (confirm('確定要清空所有訂單嗎？此操作無法復原！\n\n⚠️ 此操作僅限管理員執行')) {
                 try {
                     const snapshot = await window.firebaseFunctions.getDocs(ordersRef);
                     const deletePromises = [];
                     
                     snapshot.forEach((doc) => {
                         const data = doc.data();
-                        if (!data.test) {  // 不刪除測試資料
+                        if (!data.test && data.store === currentStore) {
                             deletePromises.push(window.firebaseFunctions.deleteDoc(doc.ref));
                         }
                     });
@@ -1147,7 +1661,10 @@
                         <td>${order.quantity}</td>
                         <td>NT$ ${order.subtotal}</td>
                         <td>
-                            <button class="remove-btn" data-order-id="${order.id}">刪除</button>
+                            ${currentUserRole === 'admin' ? 
+                                `<button class="remove-btn" data-order-id="${order.id}">刪除</button>` : 
+                                '-'
+                            }
                         </td>
                     </tr>
                 `;
@@ -1167,7 +1684,6 @@
 
             orderTableBody.innerHTML = html;
             
-            // 為刪除按鈕添加事件監聽器
             const removeButtons = orderTableBody.querySelectorAll('.remove-btn');
             removeButtons.forEach(button => {
                 if (button.dataset.orderId) {
@@ -1199,7 +1715,7 @@
                 return;
             }
 
-            let csv = '時間,顧客姓名,分類,品項,甜度,冰塊,加料,基本價格,加料價格,總單價,數量,小計\n';
+            let csv = `店家,時間,顧客姓名,分類,品項,甜度,冰塊,加料,基本價格,加料價格,總單價,數量,小計\n`;
             
             for (let i = 0; i < rows.length - 1; i++) {
                 const row = rows[i];
@@ -1231,7 +1747,7 @@
                         totalPrice = basePrice;
                     }
                     
-                    csv += `"${time}","${customerName}","${category}","${item}","${sweetness}","${ice}","${toppings}",${basePrice},${toppingPrice},${totalPrice},${quantity},${subtotal}\n`;
+                    csv += `"${currentStore}","${time}","${customerName}","${category}","${item}","${sweetness}","${ice}","${toppings}",${basePrice},${toppingPrice},${totalPrice},${quantity},${subtotal}\n`;
                 }
             }
 
@@ -1241,7 +1757,7 @@
                 if (totalCells.length >= 3) {
                     const totalQuantity = totalCells[totalCells.length - 2].textContent.trim();
                     const totalAmount = totalCells[totalCells.length - 1].textContent.replace('NT$ ', '').trim();
-                    csv += `總計,,,,,,,,,,${totalQuantity},${totalAmount}\n`;
+                    csv += `"${currentStore}",總計,,,,,,,,,${totalQuantity},${totalAmount}\n`;
                 }
             }
 
@@ -1249,7 +1765,7 @@
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `茶飲訂單_${new Date().toISOString().slice(0, 10)}.csv`);
+            link.setAttribute('download', `${currentStore}_訂單_${new Date().toISOString().slice(0, 10)}.csv`);
             link.click();
         }
 
@@ -1259,18 +1775,15 @@
                 const category = this.value;
                 itemSelect.innerHTML = '<option value="">請選擇品項</option>';
                 
-                if (category && menuData[category]) {
-                    // 更新冰塊選項
+                if (category && currentStore && storeMenus[currentStore] && storeMenus[currentStore].categories[category]) {
                     updateIceOptions(category);
+                    updateSweetnessOptions();
                     
-                    // 重置甜度選項為預設
-                    resetSweetnessOptions();
-                    
-                    Object.keys(menuData[category]).forEach(item => {
+                    Object.keys(storeMenus[currentStore].categories[category]).forEach(item => {
                         const option = document.createElement('option');
                         option.value = item;
-                        option.textContent = `${item} - NT$ ${menuData[category][item]}`;
-                        option.dataset.price = menuData[category][item];
+                        option.textContent = `${item} - NT$ ${storeMenus[currentStore].categories[category][item]}`;
+                        option.dataset.price = storeMenus[currentStore].categories[category][item];
                         itemSelect.appendChild(option);
                     });
                     itemSelect.disabled = false;
@@ -1294,7 +1807,6 @@
                     quantityInput.disabled = false;
                     addBtn.disabled = false;
                     
-                    // 更新選項狀態
                     updateOptionsForItem(item, category);
                 } else {
                     optionsGroup.style.display = 'none';
@@ -1302,8 +1814,7 @@
                     addBtn.disabled = true;
                     specialNotice.style.display = 'none';
                     
-                    // 重置甜度選項為預設
-                    resetSweetnessOptions();
+                    updateSweetnessOptions();
                 }
             });
 
@@ -1312,8 +1823,25 @@
             document.getElementById('clearBtn').addEventListener('click', clearAllOrders);
         }
 
+        // 重置甜度選項為預設
+        function resetSweetnessOptions() {
+            updateSweetnessOptions(null);
+        }
+
         // 事件監聽器設定
         loginBtn.addEventListener('click', checkPassword);
+        confirmStoreBtn.addEventListener('click', confirmStoreSelection);
+        backToLoginBtn.addEventListener('click', () => {
+            adminPanel.style.display = 'none';
+            loginPage.style.display = 'block';
+        });
+        adminSwitchBtn.addEventListener('click', () => {
+            if (currentUserRole === 'admin') {
+                showAdminPanel();
+            } else {
+                alert('您沒有管理員權限');
+            }
+        });
         logoutBtn.addEventListener('click', logout);
         
         passwordInput.addEventListener('keypress', function(e) {
@@ -1324,9 +1852,32 @@
 
         // 頁面載入時檢查是否已登入
         window.addEventListener('load', function() {
-            const isAuthenticated = localStorage.getItem('teaOrderAuth') === 'true';
-            if (isAuthenticated) {
-                showMainPage();
+            const authData = localStorage.getItem('teaOrderAuth');
+            if (authData) {
+                try {
+                    const parsed = JSON.parse(authData);
+                    const now = Date.now();
+                    const loginTime = parsed.timestamp;
+                    
+                    // 檢查登入是否在24小時內
+                    if (now - loginTime < 24 * 60 * 60 * 1000) {
+                        currentUserRole = parsed.role;
+                        
+                        if (parsed.role === 'admin') {
+                            // 管理員可以選擇進入管理面板或直接進入系統
+                            showAdminPanel();
+                        } else {
+                            loadCurrentStore();
+                        }
+                    } else {
+                        // 登入過期
+                        localStorage.removeItem('teaOrderAuth');
+                        passwordInput.focus();
+                    }
+                } catch (error) {
+                    localStorage.removeItem('teaOrderAuth');
+                    passwordInput.focus();
+                }
             } else {
                 passwordInput.focus();
             }
@@ -1334,9 +1885,8 @@
 
         // 頁面關閉時清理監聽器
         window.addEventListener('beforeunload', function() {
-            if (unsubscribe) {
-                unsubscribe();
-            }
+            if (unsubscribe) unsubscribe();
+            if (storeUnsubscribe) storeUnsubscribe();
         });
 
         // 全域函數
